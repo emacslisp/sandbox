@@ -2188,7 +2188,7 @@ fi
 
 
 # Compose CFLAGS.
-CFLAGS="-Wall -g0 -O3 -ansi -std=gnu99 -fPIC -pthread -Isrc -D SANDBOX $CFLAGS"
+CFLAGS="-Wall -gdwarf-2 -g3 -ansi -std=gnu99 -fPIC -pthread -Isrc -D SANDBOX $CFLAGS"
 
 if test "x$with_debug" == xyes; then
     CFLAGS="$CFLAGS -D DEBUG -U NDEBUG"
