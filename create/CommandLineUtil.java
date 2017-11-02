@@ -2,13 +2,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.File;
 
 public class CommandLineUtil {
     public static void main(String[] args)
     {
         // TODO Auto-generated method stub
         System.out.println(runCommand("g++ -static /home/ubuntu/code/sandbox/create/vectorTest.cpp -o /home/ubuntu/code/sandbox/create/vectorTest"));
-        System.out.println(runCommand("/home/ubuntu/code/sandbox/sample2 /home/ubuntu/code/sandbox/create/vectorTest"));
+        System.out.println(runCommand("/home/ubuntu/code/sandbox/create/oj.sh /home/ubuntu/code/sandbox/create/vectorTest"));
+        //        System.out.println(runCommand("gcc -static /home/ubuntu/code/sandbox/create/test.c -o /home/ubuntu/code/sandbox/create/test"));                
+        //        System.out.println(runCommand("/home/ubuntu/code/sandbox/sample2 /home/ubuntu/code/sandbox/create/test"));        
         //compare file one line by one line, and put diff
         // if everything is good, then return AC
         //System.out.println("test");

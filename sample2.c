@@ -173,16 +173,16 @@ void policy_setup(minisbox_t* pmsb)
         abi32(0), abi32(3), abi32(4), abi32(19), abi32(45), abi32(54), 
         abi32(90), abi32(91), abi32(122), abi32(125), abi32(140), abi32(163),
         abi32(192), abi32(197), abi32(224), abi32(243), abi32(252), 
-#ifdef __x86_64__
-        0, 1, 5, 8, 9, 10, 11, 12, 16, 25, 63, 158, 219, 231, 
-#endif /* __x86_64__ */
+
+        0, 1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 16, 21, 25, 45, 63, 89, 158, 219, 231, 
+
         -1, /* sentinel */
     };
     /* initialize table of system call rules */
     int sc, i = 0;
     for (sc = 0; sc <= INT16_MAX; sc++)
     {
-        pmsb->sc_table[sc] = _KILL_RF;
+      pmsb->sc_table[sc] = _KILL_RF;
     }
     while ((sc = sc_safe[i++]) >= 0)
     {
