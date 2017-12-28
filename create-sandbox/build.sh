@@ -1,1 +1,1 @@
-gcc ~/dev/sandbox/create-sandbox/sample2.c -o sample2
+gcc sample2.c platform.c sandbox.c -o sample2
