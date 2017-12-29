@@ -54,6 +54,13 @@ int main(int argc, const char* argv[])
 
   minisbox_t msb;
 
+  if (sandbox_init(&msb.sbox, &argv[1]) != 0)
+    {
+      fprintf(stderr, "sandbox initialization failed\n");
+      return EX_DATAERR;
+    }
+  
+  
   
   return 0;
 }
