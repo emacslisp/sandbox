@@ -143,5 +143,129 @@ void * sandbox_profiler(sandbox_t *);
 int 
 sandbox_init(sandbox_t * psbox, const char * argv[])
 {
+  FUNC_BEGIN("%p,%p", psbox, argv);
+  assert(psbox);
   
+    if (psbox == NULL)
+    {
+        FUNC_RET("%d", -1);
+    }
+    
+    psbox->lock = LOCK_INITIALIZER;
+    LOCK(psbox, EX);
+
+    __sandbox_task_init(&psbox->task, argv);
+    __sandbox_stat_init(&psbox->stat);
+    __sandbox_ctrl_init(&psbox->ctrl, (thread_func_t)sandbox_tracer);
+    __sandbox_ctrl_add_monitor(&psbox->ctrl, (thread_func_t)sandbox_profiler);
+    __sandbox_ctrl_add_monitor(&psbox->ctrl, (thread_func_t)sandbox_watcher);
+    __UPDATE_RESULT(psbox, S_RESULT_PD);
+    __UPDATE_STATUS(psbox, S_STATUS_PRE);
+    UNLOCK(psbox);
+    
+    FUNC_RET("%d", 0);
 }
+
+static int
+__sandbox_ctrl_add_monitor(ctrl_t * pctrl, thread_func_t tfm)
+{
+    FUNC_BEGIN("%p,%p", pctrl, tfm);
+    assert(pctrl && tfm);
+    
+    int i;
+    for (i = 0; i < (SBOX_MONITOR_MAX); i++)
+    {
+        if (pctrl->monitor[i].target == NULL)
+        {
+            pctrl->monitor[i].target = tfm;
+            break;
+        }
+    }
+    
+    FUNC_RET("%d", i);
+}
+  
+
+static void 
+__sandbox_ctrl_init(ctrl_t * pctrl, thread_func_t tft)
+{
+    PROC_BEGIN("%p,%p", pctrl, tft);
+    assert(pctrl && tft);
+    
+    memset(pctrl, 0, sizeof(ctrl_t));
+    
+    pctrl->policy.entry = (void *)sandbox_default_policy;
+    pctrl->policy.data = 0L;
+    memset(pctrl->monitor, 0, (SBOX_MONITOR_MAX) * sizeof(worker_t));
+    memset(&pctrl->tracer, 0, sizeof(worker_t));
+    pctrl->tracer.target = tft;
+    __QUEUE_CLEAR(pctrl);
+    
+    PROC_END();
+}  
+
+
+static void 
+__sandbox_stat_init(stat_t * pstat)
+{
+    PROC_BEGIN("%p", pstat);
+    assert(pstat);
+    
+    memset(pstat, 0, sizeof(stat_t));
+    
+    PROC_END();
+}
+
+static void 
+__sandbox_task_init(task_t * ptask, const char * argv[])
+{
+    PROC_BEGIN("%p,%p", ptask, argv);
+    assert(ptask);              /* argv could be NULL */
+    
+    memset(ptask, 0, sizeof(task_t));
+    
+    unsigned int argc = 0;
+    unsigned int offset = 0;
+    if (argv != NULL)
+    {
+        while (argv[argc] != NULL)
+        {
+            unsigned int delta  = strlen(argv[argc]) + 1;
+            if (offset + delta >= sizeof(ptask->comm.buff))
+            {
+                break;
+            }
+            strcpy(ptask->comm.buff + offset, argv[argc]);
+            ptask->comm.args[argc++] = offset;
+            offset += delta;
+        }
+    }
+    ptask->comm.buff[offset] = '\0';
+    ptask->comm.args[argc] = -1;
+    
+    strcpy(ptask->jail, "/");
+    ptask->uid = getuid();
+    ptask->gid = getgid();
+    ptask->ifd = STDIN_FILENO;
+    ptask->ofd = STDOUT_FILENO;
+    ptask->efd = STDERR_FILENO;
+    ptask->quota[S_QUOTA_WALLCLOCK] = SBOX_QUOTA_INF;
+    ptask->quota[S_QUOTA_CPU] = SBOX_QUOTA_INF;
+    ptask->quota[S_QUOTA_MEMORY] = SBOX_QUOTA_INF;
+    ptask->quota[S_QUOTA_DISK] = SBOX_QUOTA_INF;
+    PROC_END();
+}
+
+
+void *
+sandbox_profiler(sandbox_t * psbox)
+{
+  
+}  
+
+
+void *
+sandbox_watcher(sandbox_t * psbox)
+{
+  
+}  
