@@ -269,3 +269,10 @@ sandbox_watcher(sandbox_t * psbox)
 {
   
 }  
+
+void 
+sandbox_default_policy(const policy_t * ppolicy, const event_t * pevent, 
+               action_t * paction)
+{
+  
+}  
